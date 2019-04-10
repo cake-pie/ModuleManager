@@ -19,6 +19,7 @@ namespace ModuleManagerTests
 
         private readonly IPatchProgress progress;
         private readonly IBasicLogger logger;
+        private readonly IKspVersionChecker kspVersionChecker;
         private readonly INeedsChecker needsChecker;
         private readonly ITagListParser tagListParser;
         private readonly IProtoPatchBuilder protoPatchBuilder;
@@ -32,11 +33,12 @@ namespace ModuleManagerTests
             
             progress = Substitute.For<IPatchProgress>();
             logger = Substitute.For<IBasicLogger>();
+            kspVersionChecker = Substitute.For<IKspVersionChecker>();
             needsChecker = Substitute.For<INeedsChecker>();
             tagListParser = Substitute.For<ITagListParser>();
             protoPatchBuilder = Substitute.For<IProtoPatchBuilder>();
             patchCompiler = Substitute.For<IPatchCompiler>();
-            patchExtractor = new PatchExtractor(progress, logger, needsChecker, tagListParser, protoPatchBuilder, patchCompiler);
+            patchExtractor = new PatchExtractor(progress, logger, kspVersionChecker, needsChecker, tagListParser, protoPatchBuilder, patchCompiler);
         }
 
         [Fact]
@@ -44,7 +46,7 @@ namespace ModuleManagerTests
         {
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(delegate
             {
-                new PatchExtractor(null, logger, needsChecker, tagListParser, protoPatchBuilder, patchCompiler);
+                new PatchExtractor(null, logger, kspVersionChecker, needsChecker, tagListParser, protoPatchBuilder, patchCompiler);
             });
 
             Assert.Equal("progress", ex.ParamName);
@@ -55,10 +57,21 @@ namespace ModuleManagerTests
         {
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(delegate
             {
-                new PatchExtractor(progress, null, needsChecker, tagListParser, protoPatchBuilder, patchCompiler);
+                new PatchExtractor(progress, null, kspVersionChecker, needsChecker, tagListParser, protoPatchBuilder, patchCompiler);
             });
 
             Assert.Equal("logger", ex.ParamName);
+        }
+
+        [Fact]
+        public void TestConstructor__KspVersionCheckerNull()
+        {
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(delegate
+            {
+                new PatchExtractor(progress, logger, null, needsChecker, tagListParser, protoPatchBuilder, patchCompiler);
+            });
+
+            Assert.Equal("kspVersionChecker", ex.ParamName);
         }
 
         [Fact]
@@ -66,7 +79,7 @@ namespace ModuleManagerTests
         {
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(delegate
             {
-                new PatchExtractor(progress, logger, null, tagListParser, protoPatchBuilder, patchCompiler);
+                new PatchExtractor(progress, logger, kspVersionChecker, null, tagListParser, protoPatchBuilder, patchCompiler);
             });
 
             Assert.Equal("needsChecker", ex.ParamName);
@@ -77,7 +90,7 @@ namespace ModuleManagerTests
         {
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(delegate
             {
-                new PatchExtractor(progress, logger, needsChecker, null, protoPatchBuilder, patchCompiler);
+                new PatchExtractor(progress, logger, kspVersionChecker, needsChecker, null, protoPatchBuilder, patchCompiler);
             });
 
             Assert.Equal("tagListParser", ex.ParamName);
@@ -88,7 +101,7 @@ namespace ModuleManagerTests
         {
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(delegate
             {
-                new PatchExtractor(progress, logger, needsChecker, tagListParser, null, patchCompiler);
+                new PatchExtractor(progress, logger, kspVersionChecker, needsChecker, tagListParser, null, patchCompiler);
             });
 
             Assert.Equal("protoPatchBuilder", ex.ParamName);
@@ -99,7 +112,7 @@ namespace ModuleManagerTests
         {
             ArgumentNullException ex = Assert.Throws<ArgumentNullException>(delegate
             {
-                new PatchExtractor(progress, logger, needsChecker, tagListParser, protoPatchBuilder, null);
+                new PatchExtractor(progress, logger, kspVersionChecker, needsChecker, tagListParser, protoPatchBuilder, null);
             });
 
             Assert.Equal("patchCompiler", ex.ParamName);
@@ -114,11 +127,13 @@ namespace ModuleManagerTests
 
             Assert.Null(patchExtractor.ExtractPatch(patchConfig));
 
+            kspVersionChecker.DidNotReceiveWithAnyArgs().CheckKspVersionExpression(null);
             needsChecker.DidNotReceiveWithAnyArgs().CheckNeedsExpression(null);
 
             AssertNoErrors();
 
             progress.DidNotReceive().PatchAdded();
+            progress.DidNotReceiveWithAnyArgs().KspVersionUnsatisfiedRoot(null);
             progress.DidNotReceiveWithAnyArgs().NeedsUnsatisfiedRoot(null);
         }
 
@@ -137,6 +152,7 @@ namespace ModuleManagerTests
                 "NODE_TYPE",
                 "nodeName",
                 null,
+                null,
                 "has",
                 passSpecifier
             );
@@ -151,8 +167,86 @@ namespace ModuleManagerTests
 
             AssertNoErrors();
 
+            kspVersionChecker.Received().CheckKspVersionRecursive(urlConfig.config, urlConfig);
+            kspVersionChecker.DidNotReceiveWithAnyArgs().CheckKspVersionExpression(null);
             needsChecker.Received().CheckNeedsRecursive(urlConfig.config, urlConfig);
             needsChecker.DidNotReceiveWithAnyArgs().CheckNeedsExpression(null);
+            progress.DidNotReceiveWithAnyArgs().KspVersionUnsatisfiedRoot(null);
+            progress.DidNotReceiveWithAnyArgs().NeedsUnsatisfiedRoot(null);
+        }
+
+        [Fact]
+        public void TestExtractPatch__KspVersion()
+        {
+            UrlDir.UrlConfig urlConfig = CreateConfig("@NODE_TYPE");
+
+            ITagList tagList = Substitute.For<ITagList>();
+            tagListParser.Parse("NODE_TYPE", urlConfig).Returns(tagList);
+
+            IPassSpecifier passSpecifier = Substitute.For<IPassSpecifier>();
+            ProtoPatch protoPatch = new ProtoPatch(
+                urlConfig,
+                Command.Edit,
+                "NODE_TYPE",
+                "nodeName",
+                "kspversion",
+                null,
+                "has",
+                passSpecifier
+            );
+
+            protoPatchBuilder.Build(urlConfig, Command.Edit, tagList).Returns(protoPatch);
+            kspVersionChecker.CheckKspVersionExpression("kspversion").Returns(true);
+            passSpecifier.CheckNeeds(needsChecker, progress).Returns(true);
+
+            IPatch patch = Substitute.For<IPatch>();
+            patchCompiler.CompilePatch(protoPatch).Returns(patch);
+
+            Assert.Same(patch, patchExtractor.ExtractPatch(urlConfig));
+
+            AssertNoErrors();
+
+            kspVersionChecker.Received().CheckKspVersionRecursive(urlConfig.config, urlConfig);
+            needsChecker.Received().CheckNeedsRecursive(urlConfig.config, urlConfig);
+            needsChecker.DidNotReceiveWithAnyArgs().CheckNeedsExpression(null);
+            progress.DidNotReceiveWithAnyArgs().KspVersionUnsatisfiedRoot(null);
+            progress.DidNotReceiveWithAnyArgs().NeedsUnsatisfiedRoot(null);
+        }
+
+        [Fact]
+        public void TestExtractPatch__KspVersionUnsatisfied()
+        {
+            UrlDir.UrlConfig urlConfig = CreateConfig("@NODE_TYPE");
+
+            ITagList tagList = Substitute.For<ITagList>();
+            tagListParser.Parse("NODE_TYPE", urlConfig).Returns(tagList);
+
+            IPassSpecifier passSpecifier = Substitute.For<IPassSpecifier>();
+            ProtoPatch protoPatch = new ProtoPatch(
+                urlConfig,
+                Command.Edit,
+                "NODE_TYPE",
+                "nodeName",
+                "kspversion",
+                null,
+                "has",
+                passSpecifier
+            );
+
+            protoPatchBuilder.Build(urlConfig, Command.Edit, tagList).Returns(protoPatch);
+            kspVersionChecker.CheckKspVersionExpression("kspversion").Returns(false);
+
+            Assert.Null(patchExtractor.ExtractPatch(urlConfig));
+
+            AssertNoErrors();
+
+            kspVersionChecker.DidNotReceiveWithAnyArgs().CheckKspVersionRecursive(null, null);
+            needsChecker.DidNotReceiveWithAnyArgs().CheckNeedsExpression(null);
+            passSpecifier.DidNotReceiveWithAnyArgs().CheckNeeds(null, null);
+            needsChecker.DidNotReceiveWithAnyArgs().CheckNeedsRecursive(null, null);
+            patchCompiler.DidNotReceiveWithAnyArgs().CompilePatch(null);
+
+            progress.Received().KspVersionUnsatisfiedRoot(urlConfig);
             progress.DidNotReceiveWithAnyArgs().NeedsUnsatisfiedRoot(null);
         }
 
@@ -170,6 +264,7 @@ namespace ModuleManagerTests
                 Command.Edit,
                 "NODE_TYPE",
                 "nodeName",
+                null,
                 "needs",
                 "has",
                 passSpecifier
@@ -186,7 +281,10 @@ namespace ModuleManagerTests
 
             AssertNoErrors();
 
+            kspVersionChecker.Received().CheckKspVersionRecursive(urlConfig.config, urlConfig);
+            kspVersionChecker.DidNotReceiveWithAnyArgs().CheckKspVersionExpression(null);
             needsChecker.Received().CheckNeedsRecursive(urlConfig.config, urlConfig);
+            progress.DidNotReceiveWithAnyArgs().KspVersionUnsatisfiedRoot(null);
             progress.DidNotReceiveWithAnyArgs().NeedsUnsatisfiedRoot(null);
         }
 
@@ -204,6 +302,7 @@ namespace ModuleManagerTests
                 Command.Edit,
                 "NODE_TYPE",
                 "nodeName",
+                null,
                 "needs",
                 "has",
                 passSpecifier
@@ -216,10 +315,13 @@ namespace ModuleManagerTests
 
             AssertNoErrors();
 
+            kspVersionChecker.Received().CheckKspVersionRecursive(urlConfig.config, urlConfig);
+            kspVersionChecker.DidNotReceiveWithAnyArgs().CheckKspVersionExpression(null);
             passSpecifier.DidNotReceiveWithAnyArgs().CheckNeeds(null, null);
             needsChecker.DidNotReceiveWithAnyArgs().CheckNeedsRecursive(null, null);
             patchCompiler.DidNotReceiveWithAnyArgs().CompilePatch(null);
 
+            progress.DidNotReceiveWithAnyArgs().KspVersionUnsatisfiedRoot(null);
             progress.Received().NeedsUnsatisfiedRoot(urlConfig);
         }
 
@@ -237,6 +339,7 @@ namespace ModuleManagerTests
                 Command.Edit,
                 "NODE_TYPE",
                 "nodeName",
+                null,
                 "needs",
                 "has",
                 passSpecifier
@@ -250,9 +353,12 @@ namespace ModuleManagerTests
 
             AssertNoErrors();
 
+            kspVersionChecker.Received().CheckKspVersionRecursive(urlConfig.config, urlConfig);
+            kspVersionChecker.DidNotReceiveWithAnyArgs().CheckKspVersionExpression(null);
             needsChecker.DidNotReceiveWithAnyArgs().CheckNeedsRecursive(null, null);
             patchCompiler.DidNotReceiveWithAnyArgs().CompilePatch(null);
 
+            progress.DidNotReceiveWithAnyArgs().KspVersionUnsatisfiedRoot(null);
             progress.DidNotReceiveWithAnyArgs().NeedsUnsatisfiedRoot(null);
         }
 
@@ -285,6 +391,7 @@ namespace ModuleManagerTests
                 progress.Received().Error(config2, "Error - node name does not have balanced brackets (or a space - if so replace with ?):\nabc/def/NODE:HAS[#foo[]");
             });
 
+            progress.DidNotReceiveWithAnyArgs().KspVersionUnsatisfiedRoot(null);
             progress.DidNotReceiveWithAnyArgs().NeedsUnsatisfiedRoot(null);
         }
 

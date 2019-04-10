@@ -32,6 +32,7 @@ namespace ModuleManagerTests.Patches
                 "NODE",
                 "foo",
                 null,
+                null,
                 "#bar",
                 Substitute.For<IPassSpecifier>()
             );
@@ -65,6 +66,7 @@ namespace ModuleManagerTests.Patches
                 Command.Edit,
                 "NODE",
                 "foo",
+                null,
                 null,
                 "#bar",
                 Substitute.For<IPassSpecifier>()
@@ -116,6 +118,7 @@ namespace ModuleManagerTests.Patches
                 Command.Copy,
                 "NODE",
                 "foo",
+                null,
                 null,
                 "#bar",
                 Substitute.For<IPassSpecifier>()
@@ -171,6 +174,7 @@ namespace ModuleManagerTests.Patches
                 "NODE",
                 "foo",
                 null,
+                null,
                 "#bar",
                 Substitute.For<IPassSpecifier>()
             );
@@ -219,6 +223,7 @@ namespace ModuleManagerTests.Patches
                 "NODE",
                 "foo",
                 null,
+                null,
                 "#bar",
                 Substitute.For<IPassSpecifier>()
             );
@@ -240,6 +245,7 @@ namespace ModuleManagerTests.Patches
                 Command.Create,
                 "NODE",
                 "foo",
+                null,
                 null,
                 "#bar",
                 Substitute.For<IPassSpecifier>()
@@ -263,6 +269,7 @@ namespace ModuleManagerTests.Patches
                 "NODE",
                 "foo",
                 null,
+                null,
                 "#bar",
                 Substitute.For<IPassSpecifier>()
             );
@@ -285,6 +292,7 @@ namespace ModuleManagerTests.Patches
                 "NODE",
                 "foo",
                 null,
+                null,
                 "#bar",
                 Substitute.For<IPassSpecifier>()
             );
@@ -306,6 +314,7 @@ namespace ModuleManagerTests.Patches
                 Command.Special,
                 "NODE",
                 "foo",
+                null,
                 null,
                 "#bar",
                 Substitute.For<IPassSpecifier>()

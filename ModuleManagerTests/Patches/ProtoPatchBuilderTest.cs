@@ -37,6 +37,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
@@ -56,6 +57,76 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Equal("stuff", protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
+            Assert.Null(protoPatch.needs);
+            Assert.Null(protoPatch.has);
+            Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
+        }
+
+        [Fact]
+        public void TestBuild__KspVersion()
+        {
+            ITagList tagList = Substitute.For<ITagList>();
+            tagList.PrimaryTag.Returns(new Tag("NODE", null, null));
+            tagList.GetEnumerator().Returns(new ArrayEnumerator<Tag>(
+                new Tag("KSP_VERSION", "stuff", null)
+            ));
+
+            ProtoPatch protoPatch = builder.Build(urlConfig, Command.Copy, tagList);
+
+            EnsureNoErrors();
+
+            Assert.Same(urlConfig, protoPatch.urlConfig);
+            Assert.Equal(Command.Copy, protoPatch.command);
+            Assert.Equal("NODE", protoPatch.nodeType);
+            Assert.Null(protoPatch.nodeName);
+            Assert.Equal("stuff", protoPatch.kspVersion);
+            Assert.Null(protoPatch.needs);
+            Assert.Null(protoPatch.has);
+            Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
+        }
+
+        [Fact]
+        public void TestBuild__KspVersion__Case1()
+        {
+            ITagList tagList = Substitute.For<ITagList>();
+            tagList.PrimaryTag.Returns(new Tag("NODE", null, null));
+            tagList.GetEnumerator().Returns(new ArrayEnumerator<Tag>(
+                new Tag("Ksp_Version", "stuff", null)
+            ));
+
+            ProtoPatch protoPatch = builder.Build(urlConfig, Command.Copy, tagList);
+
+            EnsureNoErrors();
+
+            Assert.Same(urlConfig, protoPatch.urlConfig);
+            Assert.Equal(Command.Copy, protoPatch.command);
+            Assert.Equal("NODE", protoPatch.nodeType);
+            Assert.Null(protoPatch.nodeName);
+            Assert.Equal("stuff", protoPatch.kspVersion);
+            Assert.Null(protoPatch.needs);
+            Assert.Null(protoPatch.has);
+            Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
+        }
+
+        [Fact]
+        public void TestBuild__KspVersion__Case2()
+        {
+            ITagList tagList = Substitute.For<ITagList>();
+            tagList.PrimaryTag.Returns(new Tag("NODE", null, null));
+            tagList.GetEnumerator().Returns(new ArrayEnumerator<Tag>(
+                new Tag("ksp_version", "stuff", null)
+            ));
+
+            ProtoPatch protoPatch = builder.Build(urlConfig, Command.Copy, tagList);
+
+            EnsureNoErrors();
+
+            Assert.Same(urlConfig, protoPatch.urlConfig);
+            Assert.Equal(Command.Copy, protoPatch.command);
+            Assert.Equal("NODE", protoPatch.nodeType);
+            Assert.Null(protoPatch.nodeName);
+            Assert.Equal("stuff", protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
@@ -78,6 +149,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Equal("stuff", protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
@@ -100,6 +172,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Equal("stuff", protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
@@ -122,6 +195,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Equal("stuff", protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
@@ -144,6 +218,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Equal("stuff", protoPatch.has);
             Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
@@ -166,6 +241,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Equal("stuff", protoPatch.has);
             Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
@@ -188,6 +264,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Equal("stuff", protoPatch.has);
             Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
@@ -210,6 +287,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FirstPassSpecifier>(protoPatch.passSpecifier);
@@ -232,6 +310,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FirstPassSpecifier>(protoPatch.passSpecifier);
@@ -254,6 +333,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FirstPassSpecifier>(protoPatch.passSpecifier);
@@ -276,6 +356,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             BeforePassSpecifier passSpecifier = Assert.IsType<BeforePassSpecifier>(protoPatch.passSpecifier);
@@ -300,6 +381,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             BeforePassSpecifier passSpecifier = Assert.IsType<BeforePassSpecifier>(protoPatch.passSpecifier);
@@ -324,6 +406,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             BeforePassSpecifier passSpecifier = Assert.IsType<BeforePassSpecifier>(protoPatch.passSpecifier);
@@ -348,6 +431,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             ForPassSpecifier passSpecifier = Assert.IsType<ForPassSpecifier>(protoPatch.passSpecifier);
@@ -372,6 +456,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             ForPassSpecifier passSpecifier = Assert.IsType<ForPassSpecifier>(protoPatch.passSpecifier);
@@ -396,6 +481,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             ForPassSpecifier passSpecifier = Assert.IsType<ForPassSpecifier>(protoPatch.passSpecifier);
@@ -420,6 +506,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             AfterPassSpecifier passSpecifier = Assert.IsType<AfterPassSpecifier>(protoPatch.passSpecifier);
@@ -444,6 +531,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             AfterPassSpecifier passSpecifier = Assert.IsType<AfterPassSpecifier>(protoPatch.passSpecifier);
@@ -468,6 +556,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             AfterPassSpecifier passSpecifier = Assert.IsType<AfterPassSpecifier>(protoPatch.passSpecifier);
@@ -492,6 +581,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             LastPassSpecifier passSpecifier = Assert.IsType<LastPassSpecifier>(protoPatch.passSpecifier);
@@ -515,6 +605,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             LastPassSpecifier passSpecifier = Assert.IsType<LastPassSpecifier>(protoPatch.passSpecifier);
@@ -538,6 +629,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             LastPassSpecifier passSpecifier = Assert.IsType<LastPassSpecifier>(protoPatch.passSpecifier);
@@ -561,6 +653,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FinalPassSpecifier>(protoPatch.passSpecifier);
@@ -583,6 +676,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FinalPassSpecifier>(protoPatch.passSpecifier);
@@ -605,6 +699,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FinalPassSpecifier>(protoPatch.passSpecifier);
@@ -627,6 +722,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Insert, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Equal("stuff", protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<InsertPassSpecifier>(protoPatch.passSpecifier);
@@ -670,6 +766,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
@@ -704,6 +801,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Equal("stuff", protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
@@ -728,9 +826,68 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Equal("stuff", protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
+        }
+
+        [Fact]
+        public void TestBuild__MoreThanOneKspVersion()
+        {
+            ITagList tagList = Substitute.For<ITagList>();
+            tagList.PrimaryTag.Returns(new Tag("NODE", null, null));
+            tagList.GetEnumerator().Returns(new ArrayEnumerator<Tag>(
+                new Tag("KSP_VERSION", "stuff", null),
+                new Tag("KSP_VERSION", "otherStuff", null)
+            ));
+
+            ProtoPatch protoPatch = builder.Build(urlConfig, Command.Copy, tagList);
+
+            progress.Received().Warning(urlConfig, "more than one :KSP_VERSION tag detected, ignoring all but the first: abc/def/NODE");
+            progress.DidNotReceiveWithAnyArgs().Error(null, null);
+            EnsureNoExceptions();
+
+            Assert.Same(urlConfig, protoPatch.urlConfig);
+            Assert.Equal(Command.Copy, protoPatch.command);
+            Assert.Equal("NODE", protoPatch.nodeType);
+            Assert.Null(protoPatch.nodeName);
+            Assert.Equal("stuff", protoPatch.kspVersion);
+            Assert.Null(protoPatch.needs);
+            Assert.Null(protoPatch.has);
+            Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
+        }
+
+        [Fact]
+        public void TestBuild__NullKspVersion()
+        {
+            ITagList tagList = Substitute.For<ITagList>();
+            tagList.PrimaryTag.Returns(new Tag("NODE", null, null));
+            tagList.GetEnumerator().Returns(new ArrayEnumerator<Tag>(
+                new Tag("KSP_VERSION", null, null)
+            ));
+
+            Assert.Null(builder.Build(urlConfig, Command.Copy, tagList));
+
+            progress.DidNotReceiveWithAnyArgs().Warning(null, null);
+            progress.Received().Error(urlConfig, "empty :KSP_VERSION tag detected: abc/def/NODE");
+            EnsureNoExceptions();
+        }
+
+        [Fact]
+        public void TestBuild__EmptyKspVersion()
+        {
+            ITagList tagList = Substitute.For<ITagList>();
+            tagList.PrimaryTag.Returns(new Tag("NODE", null, null));
+            tagList.GetEnumerator().Returns(new ArrayEnumerator<Tag>(
+                new Tag("KSP_VERSION", "", null)
+            ));
+
+            Assert.Null(builder.Build(urlConfig, Command.Copy, tagList));
+
+            progress.DidNotReceiveWithAnyArgs().Warning(null, null);
+            progress.Received().Error(urlConfig, "empty :KSP_VERSION tag detected: abc/def/NODE");
+            EnsureNoExceptions();
         }
 
         [Fact]
@@ -753,6 +910,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Equal("stuff", protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
@@ -810,6 +968,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Equal("stuff", protoPatch.has);
             Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);
@@ -882,6 +1041,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FirstPassSpecifier>(protoPatch.passSpecifier);
@@ -906,6 +1066,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FirstPassSpecifier>(protoPatch.passSpecifier);
@@ -931,6 +1092,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FinalPassSpecifier>(protoPatch.passSpecifier);
@@ -1004,6 +1166,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FirstPassSpecifier>(protoPatch.passSpecifier);
@@ -1077,6 +1240,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FirstPassSpecifier>(protoPatch.passSpecifier);
@@ -1150,6 +1314,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FirstPassSpecifier>(protoPatch.passSpecifier);
@@ -1223,6 +1388,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FirstPassSpecifier>(protoPatch.passSpecifier);
@@ -1263,6 +1429,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FinalPassSpecifier>(protoPatch.passSpecifier);
@@ -1287,6 +1454,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FinalPassSpecifier>(protoPatch.passSpecifier);
@@ -1312,6 +1480,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<FirstPassSpecifier>(protoPatch.passSpecifier);
@@ -1352,6 +1521,7 @@ namespace ModuleManagerTests.Patches
             Assert.Equal(Command.Copy, protoPatch.command);
             Assert.Equal("NODE", protoPatch.nodeType);
             Assert.Null(protoPatch.nodeName);
+            Assert.Null(protoPatch.kspVersion);
             Assert.Null(protoPatch.needs);
             Assert.Null(protoPatch.has);
             Assert.IsType<LegacyPassSpecifier>(protoPatch.passSpecifier);

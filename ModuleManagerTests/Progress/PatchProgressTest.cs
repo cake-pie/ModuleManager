@@ -122,6 +122,57 @@ namespace ModuleManagerTests
         }
 
         [Fact]
+        public void TestKspVersionUnsatisfiedRoot()
+        {
+            UrlDir.UrlConfig config1 = UrlBuilder.CreateConfig("abc/def", new ConfigNode("SOME_NODE"));
+            UrlDir.UrlConfig config2 = UrlBuilder.CreateConfig("ghi/jkl", new ConfigNode("SOME_OTHER_NODE"));
+
+            Assert.Equal(0, progress.Counter.needsUnsatisfied);
+
+            progress.KspVersionUnsatisfiedRoot(config1);
+            Assert.Equal(1, progress.Counter.needsUnsatisfied);
+            logger.Received().Log(LogType.Log, "Deleting root node in file abc/def node: SOME_NODE as it can't satisfy its KSP_VERSION");
+
+            progress.KspVersionUnsatisfiedRoot(config2);
+            Assert.Equal(2, progress.Counter.needsUnsatisfied);
+            logger.Received().Log(LogType.Log, "Deleting root node in file ghi/jkl node: SOME_OTHER_NODE as it can't satisfy its KSP_VERSION");
+        }
+
+        [Fact]
+        public void TestKspVersionUnsatisfiedNode()
+        {
+            UrlDir.UrlConfig config1 = UrlBuilder.CreateConfig("abc/def", new ConfigNode("SOME_NODE"));
+            UrlDir.UrlConfig config2 = UrlBuilder.CreateConfig("ghi/jkl", new ConfigNode("SOME_OTHER_NODE"));
+
+            Assert.Equal(0, progress.Counter.needsUnsatisfied);
+
+            progress.KspVersionUnsatisfiedNode(config1, "SOME/NODE/PATH/SOME_CHILD_NODE");
+            Assert.Equal(0, progress.Counter.needsUnsatisfied);
+            logger.Received().Log(LogType.Log, "Deleting node in file abc/def subnode: SOME/NODE/PATH/SOME_CHILD_NODE as it can't satisfy its KSP_VERSION");
+
+            progress.KspVersionUnsatisfiedNode(config2, "SOME/NODE/PATH/SOME_OTHER_CHILD_NODE");
+            Assert.Equal(0, progress.Counter.needsUnsatisfied);
+            logger.Received().Log(LogType.Log, "Deleting node in file ghi/jkl subnode: SOME/NODE/PATH/SOME_OTHER_CHILD_NODE as it can't satisfy its KSP_VERSION");
+        }
+
+        [Fact]
+        public void TestKspVersionUnsatisfiedValue()
+        {
+            UrlDir.UrlConfig config1 = UrlBuilder.CreateConfig("abc/def", new ConfigNode("SOME_NODE"));
+            UrlDir.UrlConfig config2 = UrlBuilder.CreateConfig("ghi/jkl", new ConfigNode("SOME_OTHER_NODE"));
+
+            Assert.Equal(0, progress.Counter.needsUnsatisfied);
+
+            progress.KspVersionUnsatisfiedValue(config1, "SOME/NODE/PATH/some_value");
+            Assert.Equal(0, progress.Counter.needsUnsatisfied);
+            logger.Received().Log(LogType.Log, "Deleting value in file abc/def value: SOME/NODE/PATH/some_value as it can't satisfy its KSP_VERSION");
+
+            progress.KspVersionUnsatisfiedValue(config2, "SOME/NODE/PATH/some_other_value");
+            Assert.Equal(0, progress.Counter.needsUnsatisfied);
+            logger.Received().Log(LogType.Log, "Deleting value in file ghi/jkl value: SOME/NODE/PATH/some_other_value as it can't satisfy its KSP_VERSION");
+        }
+
+        [Fact]
         public void TestNeedsUnsatisfiedRoot()
         {
             UrlDir.UrlConfig config1 = UrlBuilder.CreateConfig("abc/def", new ConfigNode("SOME_NODE"));
