@@ -21,7 +21,7 @@ namespace ModuleManager
         private readonly IPatchProgress progress;
         private readonly IBasicLogger logger;
         private readonly KspVersion kspVersion;
-        private static readonly Regex versionParser = new Regex(@"^(?<comparator>[<>]{1}≈?)?(?<major>\d+)(?:\.(?<minor>\d+)(?:\.(?<revision>\d+))?)?$");
+        private static readonly Regex versionParser = new Regex(@"^(?<comparator>[<>]?≈?)?(?<major>\d+)(?:\.(?<minor>\d+)(?:\.(?<revision>\d+))?)?$");
 
         public KspVersionChecker(IPatchProgress progress, IBasicLogger logger)
         {
@@ -52,6 +52,7 @@ namespace ModuleManager
                     return (kspVersion.CompareTo(v) < 0);
                 case "<≈":
                     return (kspVersion.CompareTo(v) <= 0);
+                case "≈":
                 default:
                     return (kspVersion.CompareTo(v) == 0);
             }
