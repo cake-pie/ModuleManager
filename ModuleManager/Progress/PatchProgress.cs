@@ -72,6 +72,22 @@ namespace ModuleManager.Progress
             OnPatchApplied.Fire();
         }
 
+        public void KspVersionUnsatisfiedRoot(UrlDir.UrlConfig url)
+        {
+            logger.Info($"Deleting root node in file {url.parent.url} node: {url.type} as it can't satisfy its KSP_VERSION");
+            Counter.needsUnsatisfied.Increment();
+        }
+
+        public void KspVersionUnsatisfiedNode(UrlDir.UrlConfig url, string path)
+        {
+            logger.Info($"Deleting node in file {url.parent.url} subnode: {path} as it can't satisfy its KSP_VERSION");
+        }
+
+        public void KspVersionUnsatisfiedValue(UrlDir.UrlConfig url, string path)
+        {
+            logger.Info($"Deleting value in file {url.parent.url} value: {path} as it can't satisfy its KSP_VERSION");
+        }
+
         public void NeedsUnsatisfiedRoot(UrlDir.UrlConfig url)
         {
             logger.Info($"Deleting root node in file {url.parent.url} node: {url.type} as it can't satisfy its NEEDS");

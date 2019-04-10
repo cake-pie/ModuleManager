@@ -46,6 +46,7 @@ namespace ModuleManager.Patches
             if (tagList.PrimaryTag.trailer != null)
                 progress.Warning(urlConfig, "unrecognized trailer: '" + tagList.PrimaryTag.trailer + "' on: " + urlConfig.SafeUrl());
 
+            string kspVersion = null;
             string needs = null;
             string has = null;
             IPassSpecifier passSpecifier = null;
@@ -55,7 +56,23 @@ namespace ModuleManager.Patches
                 if (tag.trailer != null)
                     progress.Warning(urlConfig, "unrecognized trailer: '" + tag.trailer + "' on: " + urlConfig.SafeUrl());
 
-                if (tag.key.Equals("NEEDS", StringComparison.CurrentCultureIgnoreCase))
+                if (tag.key.Equals("KSP_VERSION", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    if (kspVersion != null)
+                    {
+                        progress.Warning(urlConfig, "more than one :KSP_VERSION tag detected, ignoring all but the first: " + urlConfig.SafeUrl());
+                        continue;
+                    }
+                    if (string.IsNullOrEmpty(tag.value))
+                    {
+                        progress.Error(urlConfig, "empty :KSP_VERSION tag detected: " + urlConfig.SafeUrl());
+                        error = true;
+                        continue;
+                    }
+
+                    kspVersion = tag.value;
+                }
+                else if (tag.key.Equals("NEEDS", StringComparison.CurrentCultureIgnoreCase))
                 {
                     if (needs != null)
                     {
@@ -241,7 +258,7 @@ namespace ModuleManager.Patches
                 else passSpecifier = new LegacyPassSpecifier();
             }
 
-            return new ProtoPatch(urlConfig, command, nodeType, nodeName, needs, has, passSpecifier);
+            return new ProtoPatch(urlConfig, command, nodeType, nodeName, kspVersion, needs, has, passSpecifier);
         }
     }
 }

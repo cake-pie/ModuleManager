@@ -114,11 +114,12 @@ namespace ModuleManager
                 patchLogger.Info(status);
 
                 UrlDir gameData = GameDatabase.Instance.root.children.First(dir => dir.type == UrlDir.DirectoryType.GameData && dir.name == "");
+                IKspVersionChecker kspVersionChecker = new KspVersionChecker(progress, patchLogger);
                 INeedsChecker needsChecker = new NeedsChecker(mods, gameData, progress, patchLogger);
                 ITagListParser tagListParser = new TagListParser(progress);
                 IProtoPatchBuilder protoPatchBuilder = new ProtoPatchBuilder(progress);
                 IPatchCompiler patchCompiler = new PatchCompiler();
-                PatchExtractor extractor = new PatchExtractor(progress, patchLogger, needsChecker, tagListParser, protoPatchBuilder, patchCompiler);
+                PatchExtractor extractor = new PatchExtractor(progress, patchLogger, kspVersionChecker, needsChecker, tagListParser, protoPatchBuilder, patchCompiler);
 
                 // Have to convert to an array because we will be removing patches
                 IEnumerable<IPatch> extractedPatches =

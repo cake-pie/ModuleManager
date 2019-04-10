@@ -11,6 +11,7 @@ namespace ModuleManager
     {
         private readonly IPatchProgress progress;
         private readonly IBasicLogger logger;
+        private readonly IKspVersionChecker kspVersionChecker;
         private readonly INeedsChecker needsChecker;
         private readonly ITagListParser tagListParser;
         private readonly IProtoPatchBuilder protoPatchBuilder;
@@ -19,6 +20,7 @@ namespace ModuleManager
         public PatchExtractor(
             IPatchProgress progress,
             IBasicLogger logger,
+            IKspVersionChecker kspVersionChecker,
             INeedsChecker needsChecker,
             ITagListParser tagListParser,
             IProtoPatchBuilder protoPatchBuilder,
@@ -27,6 +29,7 @@ namespace ModuleManager
         {
             this.progress = progress ?? throw new ArgumentNullException(nameof(progress));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.kspVersionChecker = kspVersionChecker ?? throw new ArgumentNullException(nameof(kspVersionChecker));
             this.needsChecker = needsChecker ?? throw new ArgumentNullException(nameof(needsChecker));
             this.tagListParser = tagListParser ?? throw new ArgumentNullException(nameof(tagListParser));
             this.protoPatchBuilder = protoPatchBuilder ?? throw new ArgumentNullException(nameof(protoPatchBuilder));
@@ -91,6 +94,13 @@ namespace ModuleManager
                     return null;
                 }
 
+                if (protoPatch.kspVersion != null && !kspVersionChecker.CheckKspVersionExpression(protoPatch.kspVersion))
+                {
+                    progress.KspVersionUnsatisfiedRoot(urlConfig);
+                    return null;
+                }
+                kspVersionChecker.CheckKspVersionRecursive(urlConfig.config, urlConfig);
+
                 if (protoPatch.needs != null && !needsChecker.CheckNeedsExpression(protoPatch.needs))
                 {
                     progress.NeedsUnsatisfiedRoot(urlConfig);
@@ -100,8 +110,8 @@ namespace ModuleManager
                 {
                     return null;
                 }
-
                 needsChecker.CheckNeedsRecursive(urlConfig.config, urlConfig);
+
                 return patchCompiler.CompilePatch(protoPatch);
             }
             catch(Exception e)

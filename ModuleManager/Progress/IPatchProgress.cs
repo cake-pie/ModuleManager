@@ -16,6 +16,9 @@ namespace ModuleManager.Progress
         void Error(string message);
         void Exception(string message, Exception exception);
         void Exception(UrlDir.UrlConfig url, string message, Exception exception);
+        void KspVersionUnsatisfiedRoot(UrlDir.UrlConfig url);
+        void KspVersionUnsatisfiedNode(UrlDir.UrlConfig url, string path);
+        void KspVersionUnsatisfiedValue(UrlDir.UrlConfig url, string path);
         void NeedsUnsatisfiedRoot(UrlDir.UrlConfig url);
         void NeedsUnsatisfiedNode(UrlDir.UrlConfig url, string path);
         void NeedsUnsatisfiedValue(UrlDir.UrlConfig url, string path);
